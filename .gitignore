@@ -2,4 +2,4 @@ target
 .idea
 .metadata
 *.iml
-classes/
+classes

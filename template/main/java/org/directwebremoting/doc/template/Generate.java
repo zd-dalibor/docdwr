@@ -139,10 +139,10 @@ public class Generate
 
         writeHtmlOutput(pages, root + "/dist/");
         copyStatic(root + "/docs/web/dwr", root + "/dist", new String[] {
-            "png", "gif", "jpg", "css", "pdf", "dtd", "xsd", "js"
+            "png", "gif", "jpg", "css", "pdf", "dtd", "xsd", "js", "ico"
         });
 
-        writeApacheConfOutput(pages, root + "/target/dwr.conf");
+        writeApacheConfOutput(pages, root + "/dist/dwr.conf");
     }
 
     /**
@@ -442,10 +442,10 @@ public class Generate
      *
      */
     private static final String STANDARD_HEADER =
-        "<div id='header'><a href='http://directwebremoting.org/dwr/'>Direct Web Remoting</a></div>\n" +
+        "<div id='header'><a href='@rootPageUrl@'>Direct Web Remoting</a></div>\n" +
         "<div id=pagelinks>\n" +
           "<div class='navlinks'>[ \n" +
-             "<a href='/' title='Easy Ajax for Java'>DWR</a> | \n" +
+             "<a href='@rootPageUrl@' title='Easy Ajax for Java'>DWR</a> | \n" +
            " ]\n" +
             "<form method='GET' action='https://www.google.com/search' id='search-form'>\n" +
               "<span id='search'>\n" +
@@ -463,6 +463,7 @@ public class Generate
     {
         StringBuilder breadcrumbs = new StringBuilder();
         Page history = page;
+        Page root = null;
 
         while (history != null)
         {
@@ -472,10 +473,18 @@ public class Generate
             }
 
             breadcrumbs.insert(0, history.getLink(page));
+            if (history.parent == null) {
+                root = history;
+            }
             history = history.parent;
         }
 
-        return STANDARD_HEADER + "<div id='breadcrumbs'>" + breadcrumbs + "</div></div>\n";
+        String rootPageUrl = "/";
+        if (root != null) {
+            rootPageUrl = page.getPathToRoot() + root.path;
+        }
+
+        return STANDARD_HEADER.replace("@rootPageUrl@", rootPageUrl) + "<div id='breadcrumbs'>" + breadcrumbs + "</div></div>\n";
     }
 
     /**

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hints and Tips</title>
+  <meta name='alias' content='/dwr/reverse-ajax/hints-and-tips'>
+  <link rel="stylesheet" type="text/css" href="../../media/styles.css">
+  <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>
+  <script type='text/javascript' src='../../media/dojo.js'> </script>
+  <script type='text/javascript' src='../../media/menu.js'> </script>
+</head>
+<body>
+<div id='header'><a href='../../index.html'>Direct Web Remoting</a></div>
+<div id=pagelinks>
+<div class='navlinks'>[ 
+<a href='../../index.html' title='Easy Ajax for Java'>DWR</a> | 
+ ]
+<form method='GET' action='https://www.google.com/search' id='search-form'>
+<span id='search'>
+<input class='form-text' type='text' id='search-box' name='as_q' size='20' maxlength='255'>
+<input type='hidden' name='as_sitesearch' value='directwebremoting.org'/>
+<input class='form-submit' type='submit' value='Google'/>
+</span>
+</form>
+</div>
+<div id='breadcrumbs'><a href='../../index.html'>DWR - Easy Ajax for JAVA</a> &#x00BB; <a href='../../documentation/index.html'>Documentation</a> &#x00BB; <a href='../../documentation/reverse-ajax/index.html'>Reverse Ajax</a> &#x00BB; <a href='hints-and-tips.html' class='currentLink'>Hints and Tips</a></div></div>
+<div id='content'>
+
+<h1>Reverse Ajax Hints and Tips</h1>
+
+<ul>
+  <li><a href="#ssLifeCycle">ScriptSession lifecycle</a> - About the creation and invalidation of ScriptSessions.</li>
+  <li><a href="#nonDWRThreads">Non DWR Threads</a> - Passing request information to a non-dwr thread.</li>
+  <li><a href="#obtainSSM">ScriptSessionManager</a> - Obtaining the ScriptSessionManager from a non-dwr thread.</li> 
+  <li><a href="#scale">Scaleability</a> - One thread per application is scalable, one thread per request is not.</li>
+  <li><a href="#browserAPI">Browser API</a> - How to target specific ScriptSessions.</li>
+  <li><a href="#differentiatingSS">ScriptSession</a> - Setting differentiating attribute(s) on a ScriptSession.</li>
+  <li><a href="#differentiatingSSByRequestParam">ScriptSession</a> - Differentiating ScriptSessions by request parameters.</li>
+  <li><a href="#scriptSessionListeners">ScriptSessionListeners</a> - How to use ScriptSessionListeners to take actions when a ScriptSession is created or destroyed.</li>
+</ul>
+
+<h2><a name="ssLifeCycle"></a>ScriptSession lifecycle</h2>
+
+<p>ScriptSessions are created when /dwr/engine.js is included in a page. By default, the lifecycle is maintained by the org.directwebremoting.impl.DefaultScriptSessionManager.</p>
+        
+<p>If you call the following javascript function:</p>
+<pre>dwr.engine.setNotifyServerOnPageUnload(true);</pre>
+
+<p>A remote DWR call will be made to the ScriptSessionManager when the page is unloaded, informing it to invalidate the ScriptSession. By default DWR makes this call synchronously to give the call the greatest chance of success.  The synchronous nature of this call may result in a delay when closing the browser.  If this is undesired you may pass an optional second parameter into dwr.engine.setNotifyServerOnPageUnload:</p>   
+<pre>dwr.engine.setNotifyServerOnPageUnload(true, true);</pre>
+<p>The optional second parameter tells DWR to call the unloader asynchronously.  This may result in the unloader being called inconsistently due to the browser closing the connection while unloading.</p>
+<p>Note: In order for this to work DWR relies on the browser's "unload" event being fired.  Unfortunately, browsers handle this event inconsistently and there may be very little DWR can do.  If you are interested in following this issue you can watch <a href="http://directwebremoting.org/jira/browse/DWR-151">DWR-151</a>. </p> 
+ 
+<p>If setNotifyServerOnPageUnload is not set to true or fails to notify the server due to browser limitations ScriptSessions will be invalidated using a timeout strategy on the server - ScriptSessions inactive for five minutes or more will be invalidated.</p>
+
+<h2><a name="nonDWRThreads"></a>Passing request information to a non-dwr thread</h2>
+<p>Non-dwr threads have no reference to the dwr-thread that created them. Because of this, WebContextFactory().get().getScriptSession() will return null in non-dwr threads. You will therefore need to pass data from DWR threads to non-DWR threads.</p>
+ 
+<h2><a name="obtainSSM"></a>Obtaining the ScriptSessionManager from a non-dwr thread</h2>
+<p>The ScriptSessionManager can be obtained using the following code:</p>
+ 
+<pre>
+Container container = ServerContextFactory.get().getContainer();
+ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
+</pre>
+ 
+<h2><a name="scale"></a>One thread per application is scalable, one thread per request is not</h2>
+<p>Most reverse ajax implementations require a separate thread to push data to clients. Spawning a separate thread for each DWR request is not scalable.  We recommend that you use a thread pool in combination with an application scoped DWR creator, please see the Clock example in the dwr.war for a sample implementation.</p>
+  
+<h2><a name="browserAPI"></a>Browser API - How to target specific ScriptSessions </h2>
+
+<p>DWR's <a href="http://directwebremoting.org/dwr/javadoc/org/directwebremoting/Browser.html">Browser API</a> contains several useful methods for updating browsers. Several of the Browser methods take a <a href="http://directwebremoting.org/dwr/javadoc/org/directwebremoting/ScriptSessionFilter.html">ScriptSessionFilter</a> which will allow you to target specific ScriptSessions based on their attributes (<a href="#differentiatingSS">see Setting differentiating attribute(s) on a ScriptSession</a>).</p>
+
+<p>How to use the Browser API with a ScriptSessionFilter to differentiate users:</p>
+
+<ol>
+
+<li><p>Implement a ScriptSessionFilter:
+
+</p><pre>
+public class TestScriptSessionFilter implements ScriptSessionFilter
+{
+    public TestScriptSessionFilter(String attributeName)
+    {
+        this.attributeName = attributeName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.directwebremoting.ScriptSessionFilter#match(org.directwebremoting.ScriptSession)
+     */
+    public boolean match(ScriptSession session)
+    {
+        Object check = session.getAttribute(attributeName);
+        return (check != null &amp;&amp; check.equals(Boolean.TRUE));
+    }
+
+    private String attributeName;
+}
+</pre>
+</li>
+<li>
+<p><a href="#differentiatingSS">Set an attribute on the ScriptSession</a>:
+<pre>
+// Add the attribute into the ScriptSession sometime before using the Filter.
+ScriptSession scriptSession = WebContextFactory.get().getScriptSession();
+String attributeName = "attr";
+scriptSession.setAttribute(attributeName, true);
+</pre>
+</p>
+<p>Note - this must be done from a DWR initiated thread (<a href="threads.html">WebContextFactory requires it</a>).</p>
+<p>See <a href="#differentiatingSS">Setting differentiating attribute(s) on a ScriptSession</a> for more information.</p>
+</li>
+<li>
+<p>User the ScriptSessionFilter in your reverse AJAX thread:
+<pre>
+ScriptSessionFilter filter = new TestScriptSessionFilter(attributeName);
+Browser.withPageFiltered(page, filter, new Runnable()
+{
+    public void run()
+    {
+        // Call a method on DWR's Util class which sets the value on an element on your HTML page with a id of "divID".
+        Util.setValue("divID", "value of div");
+    }
+});
+</pre>
+Or call a named function:
+<pre>
+ScriptSessionFilter filter = new TestScriptSessionFilter(attributeName);
+Browser.withPageFiltered(page, filter, new Runnable()
+{
+    public void run()
+    {
+        // Call a named function from your html page. Note - The ScriptsSessions.addFunctionCall will only
+        // send the function call to ScriptSessions matching TestScriptSessionFilter.
+        ScriptSessions.addFunctionCall("yourJavaScriptFunctionName", arg1, arg2, etc.);
+    }
+});
+</pre>
+Or add some arbitrary script:
+<pre>
+ScriptSessionFilter filter = new TestScriptSessionFilter(attributeName);
+Browser.withPageFiltered(page, filter, new Runnable()
+{
+    public void run()
+    {
+        // Add script which will modify the document.title. on your html page.
+        ScriptSessions.addScript(("document.title = 'My new title, from DWR reverse AJAX!';"));
+    }
+});       
+</pre>
+</li>
+</ol>
+<p>It is important to note that a few Browser methods require a WebContext which require that the requests come from a DWR thread.  Currently the methods that require this are - withCurrentPageFiltered, withCurrentPage, and getTargetSessions.  All other methods can be called safely from non-DWR threads.</p>
+
+<h2><a name="differentiatingSS"></a>Setting differentiating attribute(s) on a ScriptSession</h2>
+<p>One of the most common ways to differentiate users on the same page is by setting attributes on the ScriptSession and getting them in a reverse ajax thread. Since the ScriptSession does not exist until engine.js is included this cannot be done in an MVC controller or a JSP.</p>
+ 
+<p>There are currently two best practices for setting an attribute on the ScriptSession:</p>
+
+<p><b>1.</b> Call a remote DWR method:</p>
+<pre>
+/**
+ * This method should be remoted via DWR and generally called before reverse ajax is initialized.  
+ * You may choose to call this method when your page which uses reverse AJAX is initialized, then
+ * in your callback function you may initialize reverse AJAX (dwr.engine.setActiveReverseAjax(true);)
+ * and be certain that the 
+ */
+public void remoteMethod() {
+   String value = "someValue"; // this may come from the HttpSession for example
+   ScriptSession scriptSession = WebContextFactory.get().getScriptSession();
+   scriptSession.setAttribute("key", value);
+}
+</pre> 
+<p><b>2.</b> Use a <a href="#scriptSessionListeners">ScriptSessionListener</a> which will be notified when ScriptSessions are created and destroyed.  Please see the <a href="#scriptSessionListeners">ScriptSessionListener</a> section for more details.</p>
+<pre>
+/**
+ * When a ScriptSession is created set a "userId" attribute on the ScriptSession.
+ * In this case userId is an attribute you have set on the HttpSession that uniquely
+ * identifies the user.
+ */
+public void sessionCreated(ScriptSessionEvent ev) {
+    HttpSession session = WebContextFactory.get().getSession();
+    String userId = (String) session.getAttribute("userId");
+    ev.getSession().setAttribute("userId", userId);
+}
+</pre>
+<p>Once the ScriptSession has been populated with an attribute, a reverse ajax thread can use the <a href="#browserAPI">Browser API</a> (recommended) with a <a href="#browserAPI">ScriptSessionFilter</a> to target specific ScriptSessions or retrieve the attribute from the ScriptSession (scriptSession.getAttribute()) to differentiate the users.
+<h2><a name="differentiatingSSByRequestParam"></a>Differentiating ScriptSessions by request parameters</h2>
+Another way to differentiate users on the same page is by the request parameters. In order to use this functionality, you must set the <a href="../server/configuration/servlet/index.html">normalizeIncludesQueryString</a> init-param to true. Once this is enabled, the ScriptSessionManager will include request parameters in the page name.
+<pre>
+scriptSessionManager.getScriptSessionsByPage("/page?foo=bar")
+</pre>
+<p>If you would like to plug-in your own algorithm to determine the page name, you will need to implement your own org.directwebremoting.extend.PageNormalizer and plug it in using DWR's dependency injection mechanism in web.xml.</p>
+ 
+<pre>
+&lt;servlet&gt;
+  &lt;display-name&gt;DWR Servlet&lt;/display-name&gt;
+  &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;  
+  &lt;description&gt;Direct Web Remoter Servlet&lt;/description&gt;
+  &lt;servlet-class&gt;org.directwebremoting.servlet.DwrServlet&lt;/servlet-class&gt;
+  &lt;init-param&gt;
+       &lt;param-name&gt;org.directwebremoting.extend.PageNormalizer&lt;/param-name&gt;
+       &lt;param-value&gt;foo.bar.MyPageNormalizer&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+</pre></p>
+
+<h2><a name="scriptSessionListeners"></a>ScriptSessionListeners</h2>
+
+<p>ScriptSessionListeners allow you to take action when a ScriptSession has been created or destroyed.  To configure a ScriptSessionListener you will need to execute code similar to the following:
+
+<pre>
+Container container = ServerContextFactory.get().getContainer();
+ScriptSessionManager manager = container.getBean(ScriptSessionManager.class);
+ScriptSessionListener listener = new ScriptSessionListener() {
+    public void sessionCreated(ScriptSessionEvent ev) {
+        HttpSession session = WebContextFactory.get().getSession();
+        String userId = (String) session.getAttribute("userId");
+        ev.getSession().setAttribute("userId", userId);
+    }
+
+    public void sessionDestroyed(ScriptSessionEvent ev) { }
+};
+manager.addScriptSessionListener(listener);
+</pre>
+<p>It is important to note that ScriptSessionListeners must be added after DWR has initialized.  There are generally two ways to do this:
+<ol>
+<li>Extend the DWR servlet and execute the above code after the DWR servlet initializes.</li>
+<li>Execute the above code in a servlet that has a <pre>&lt;load-on-startup /&gt;</pre> value larger than the DWR servlet</li>
+</ol>
+</p>
+
+</div>
+<div class='menu'>
+<ul id='nav'>
+<li class='noChildren'><a href='../../index.html'>Home</a></li>
+<li class='hasChildren'><a href='../../introduction/index.html'>Overview&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../introduction/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../introduction/getting-started.html'>Quick Start</a></li>
+<li class='noChildren'><a href='../../introduction/remoting_options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../introduction/scripting-dwr.html'>Scripting DWR</a></li>
+<li class='noChildren'><a href='../../introduction/tutorials.html'>Official Examples</a></li>
+<li class='noChildren'><a href='../../introduction/elsewhere.html'>Other Examples</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../downloads/index.html'>Download&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/ciBuilds.html'>CI Builds</a></li>
+<li class='hasChildren'><a href='../../downloads/changelog/index.html'>Change Log&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/changelog/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/changelog/dwr30.html'>New in v3.0</a></li>
+<li class='noChildren'><a href='../../downloads/changelog/dwr20.html'>New in v2.0</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../downloads/upgrading/index.html'>Upgrading DWR&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/upgrading/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/upgrading/dwr30.html'>Upgrading to Version 3.0</a></li>
+<li class='noChildren'><a href='../../downloads/upgrading/dwr20.html'>Upgrading to Version 2.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/index.html'>Documentation&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/browser/index.html'>Client Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/browser/engine/index.html'>engine.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/engine/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/batch.html'>Call Batching</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/ordering.html'>Call Ordering</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/hooks.html'>Remoting Hooks</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/errors.html'>Timeouts</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/browser/util/index.html'>util.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/util/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/lists.html'>List Manipulation</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/$.html'>$()</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/tables.html'>Table Manipulation</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/addOptions.html'>addOptions</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/addRows.html'>addRows</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/byId.html'>byId()</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/escapeHtml.html'>escapeHtml</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getText.html'>getText</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getValue.html'>getValue</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getValues.html'>getValues</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/onReturn.html'>onReturn</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/removeAllOptions.html'>removeAllOptions</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/removeAllRows.html'>removeAllRows</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/selectRange.html'>selectRange</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/setValue.html'>setValue</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/setValues.html'>setValues</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/toDescriptiveString.html'>toDescriptiveString</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/useLoadingMessage.html'>useLoadingMessage</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/browser/xdomain.html'>Cross-domain Support</a></li>
+<li class='noChildren'><a href='../../documentation/browser/errors.html'>Error Handling</a></li>
+<li class='noChildren'><a href='../../documentation/browser/extra-data.html'>Callbacks and Scoping</a></li>
+<li class='noChildren'><a href='../../documentation/browser/support.html'>Browser Support</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/index.html'>Server Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/index.html'>Configuration&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/servlet/index.html'>WEB-INF Reference&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/multiconfig.html'>Multiple dwr.xml files</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/plugin.html'>Plug-ins</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/test.html'>Test Mode</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/index.html'>dwr.xml&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/converters/index.html'>Converters&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/array.html'>Arrays</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/bean.html'>Beans / Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/collection.html'>Collections</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/dom.html'>DOM Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/enum.html'>Enum</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/file.html'>Images and Binary Files</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/creators/index.html'>Creators&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/new.html'>'New' Creator</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/scripted.html'>'Scripted' Creator</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/static.html'>'Static' Creator</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/filters.html'>Filters</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/signatures.html'>Signatures</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/configuration/annotations.html'>Annotations</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/fluent.html'>Fluent Configuration</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/integration/index.html'>Integrating with&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/integration/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/spring.html'>Spring</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/hibernate.html'>Hibernate</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/jsf.html'>JSF</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/guice.html'>Guice</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/struts.html'>Struts</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/jaxer.html'>Aptana Jaxer</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/pageflow.html'>Pageflow / Beehive</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/environment.html'>Supported Environments</a></li>
+<li class='noChildren'><a href='../../documentation/server/logging.html'>Logging</a></li>
+<li class='noChildren'><a href='../../documentation/server/javaapi.html'>Accessing Servlet Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/generic.html'>Reading from other URLs</a></li>
+<li class='noChildren'><a href='../../documentation/server/script_compression.html'>Script Compression</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/reverse-ajax/index.html'>Reverse Ajax&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/getting-started.html'>Getting Started</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/configuration.html'>Configuring</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/retry.html'>Error/Retry Logic</a></li>
+<li class='noChildren'><a href='hints-and-tips.html' class='currentLink'>Hints and Tips</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/load-monitors.html'>Load Monitors</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/threads.html'>Non-Web Threads</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../security/index.html'>Security&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../security/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../security/script-tag-protection.html'>JavaScript Security</a></li>
+<li class='noChildren'><a href='../../security/allowGetForSafariButMakeForgeryEasier.html'>Safari, GET and CSRF</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../support/index.html'>Support&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../support/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../support/common_problems.html'>Common Problems</a></li>
+<li class='noChildren'><a href='../../support/faqs.html'>Common Questions</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../development/index.html'>Development&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../development/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../development/contributor/index.html'>Contributors&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../development/contributor/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../development/contributor/contract.html'>The Maintainer Contract</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../development/ccla.html'>CLA for Corporations</a></li>
+<li class='noChildren'><a href='../../development/icla.html'>CLA for Individuals</a></li>
+</ul>
+</li>
+</ul></div>
+</body>
+</html>

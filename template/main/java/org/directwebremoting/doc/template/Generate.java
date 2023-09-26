@@ -426,7 +426,9 @@ public class Generate
     {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("  <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>\n");
+        builder.append("  <link rel='shortcut icon' type='image/x-icon' href='");
+        builder.append(page.getPathToRoot());
+        builder.append("favicon.ico'>\n");
         builder.append("  <script type='text/javascript' src='");
         builder.append(page.getPathToRoot());
         builder.append("media/dojo.js");

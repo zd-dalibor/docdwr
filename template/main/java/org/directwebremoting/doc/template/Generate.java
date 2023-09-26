@@ -445,9 +445,9 @@ public class Generate
         "<div id='header'><a href='http://directwebremoting.org/dwr/'>Direct Web Remoting</a></div>\n" +
         "<div id=pagelinks>\n" +
           "<div class='navlinks'>[ \n" +
-             "<a href='/dwr/' title='Easy Ajax for Java'>DWR</a> | \n" +
+             "<a href='/' title='Easy Ajax for Java'>DWR</a> | \n" +
            " ]\n" +
-            "<form method='GET' action='http://www.google.com/search' id='search-form'>\n" +
+            "<form method='GET' action='https://www.google.com/search' id='search-form'>\n" +
               "<span id='search'>\n" +
                 "<input class='form-text' type='text' id='search-box' name='as_q' size='20' maxlength='255'>\n" +
                 "<input type='hidden' name='as_sitesearch' value='directwebremoting.org'/>\n" +

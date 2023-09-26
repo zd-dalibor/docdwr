@@ -31,16 +31,16 @@ jobs:
     steps:
       - name: Install jdk
         run: |
-          wget https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
-          tar -xvf openjdk-17.0.2_linux-x64_bin.tar.gz
+          wget -q https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+          tar -xf openjdk-17.0.2_linux-x64_bin.tar.gz
           mv jdk-17.0.2 /opt/
           export JAVA_HOME='/opt/jdk-17.0.2'
           export PATH="$JAVA_HOME/bin:$PATH"
           java -version
       - name: Install maven
         run: |
-          wget https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz
-          tar -xvf apache-maven-3.9.4-bin.tar.gz
+          wget -q https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz
+          tar -xf apache-maven-3.9.4-bin.tar.gz
           mv apache-maven-3.9.4 /opt/
           export M2_HOME='/opt/apache-maven-3.9.4'
           export PATH="$M2_HOME/bin:$PATH"

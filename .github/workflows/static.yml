@@ -36,15 +36,16 @@ jobs:
         with:
           distribution: 'oracle'
           java-version: '17'
+          cache: 'maven'
       - name: Setup Maven
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: '3.9.4'
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
       - name: Publish site
         run: |
           mvn --batch-mode clean compile exec:java
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:

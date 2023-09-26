@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>getText</title>
+  <meta name='alias' content='/dwr/browser/util/gettext'>
+  <link rel="stylesheet" type="text/css" href="../../../media/styles.css">
+  <script type='text/javascript' src='../../../media/dojo.js'> </script>
+  <script type='text/javascript' src='../../../media/menu.js'> </script>
+</head>
+<body>
+<div id='header'><a href='http://directwebremoting.org/dwr/'>Direct Web Remoting</a></div>
+<div id=pagelinks>
+<div class='navlinks'>[ 
+<a href='/dwr/' title='Easy Ajax for Java'>DWR</a> | 
+ ]
+<form method='GET' action='http://www.google.com/search' id='search-form'>
+<span id='search'>
+<input class='form-text' type='text' id='search-box' name='as_q' size='20' maxlength='255'>
+<input type='hidden' name='as_sitesearch' value='directwebremoting.org'/>
+<input class='form-submit' type='submit' value='Google'/>
+</span>
+</form>
+</div>
+<div id='breadcrumbs'><a href='../../../index.html'>DWR - Easy Ajax for JAVA</a> &#x00BB; <a href='../../../documentation/index.html'>Documentation</a> &#x00BB; <a href='../../../documentation/browser/index.html'>Client Side</a> &#x00BB; <a href='../../../documentation/browser/util/index.html'>util.js</a> &#x00BB; <a href='getText.html' class='currentLink'>getText</a></div></div>
+<div id='content'>
+
+<script type='text/javascript' src='../../../media/util.js'> </script>
+<script type="text/javascript" src="../../../media/eval.js"> </script>
+<script type="text/javascript">
+function doGetText()
+{
+    var ret = DWRUtil.getText($('gettext').value);
+    DWRUtil.setValue("gettextret", ret);
+}
+
+function doGetText2()
+{
+    var ret = DWRUtil.getValue($('gettext2').value);
+    DWRUtil.setValue("gettextret2", ret);
+}
+</script>
+
+<h1>DWRUtil.getText(id)</h1>
+
+<p><code>getText(id)</code> is similar to <code>getValue(id)</code>, except that it is designed for <code>&lt;select ...</code> lists where you need to get the displayed text rather than the value of the current option.</p>
+
+<!--break-->
+
+<p>
+<code>
+DWRUtil.getText</code>(
+<input id="gettext" value="select" size="10"/> )
+<input type="button" value="getText" onclick="doGetText()"/>
+  returns = "<span id="gettextret" class="reply"> </span>"
+  <br/>
+  And for comparison:
+  <br/>
+  <code>DWRUtil.getValue</code>(
+  <input id="gettext2" value="select" size="10"/> )
+  <input type="button" value="getValue" onclick="doGetText2()"/>
+  returns = "<span id="gettextret2" class="reply"> </span>"
+</p>
+
+<!-- START COPIED BLOCK: Source: node/75 Copies: node/76-79 -->
+
+<style>
+.small { font-size:80%; }
+.testblock { margin:10px; background-color:#fff8dd; padding:10px }
+</style>
+
+<div class="testblock">
+
+<p><b>HTML Test Elements</b></p>
+
+<div style="border:1px solid #999;" id="div">A div element with id="div".</div>
+
+<table>
+<tr>
+
+<td>Text area <span class="small">(id="textarea")</span>:</td>
+<td><textarea id="textarea"></textarea></td>
+
+<td>Selection list <span class="small">(id="select")</span>:</td>
+<td>
+  <select id="select">
+    <option selected="selected" value="value one">text one</option>
+    <option value="value two">text two</option>
+    <option value="value three">text three</option>
+  </select>
+</td>
+
+</tr>
+<tr>
+
+<td>Text input <span class="small">(id="text")</span>:</td>
+<td><input id="text" value="" /></td>
+
+<td>Password input <span class="small">(id="password")</span>:</td>
+<td><input id="password" value="password" type="password" /></td>
+
+<!--
+
+</tr>
+<tr>
+
+<td>Radio buttons <span class="small">(id="radio")</span>:</td>
+<td>
+  <input id="radio" name="radio" value="one" type="radio" checked="checked"/>one<br/>
+  <input id="radio" name="radio" value="two" type="radio"/>two
+</td>
+
+<td>Check box <span class="small">(id="checkbox")</span>:</td>
+<td><input id="checkbox" value="input checkbox" type="checkbox" />input</td>
+
+-->
+
+</tr>
+<tr>
+
+<td>Form button <span class="small">(id="formbutton")</span>:</td>
+<td><input id="formbutton" value="button" type="button" /></td>
+
+<td>Fancy button <span class="small">(id="button")</span>:</td>
+<td><button id="button">button</button></td>
+
+</tr>
+</table>
+
+</div>
+
+<!-- END COPIED BLOCK -->
+
+</div>
+<div class='menu'>
+<ul id='nav'>
+<li class='noChildren'><a href='../../../index.html'>Home</a></li>
+<li class='hasChildren'><a href='../../../introduction/index.html'>Overview&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../introduction/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../introduction/getting-started.html'>Quick Start</a></li>
+<li class='noChildren'><a href='../../../introduction/remoting_options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../../introduction/scripting-dwr.html'>Scripting DWR</a></li>
+<li class='noChildren'><a href='../../../introduction/tutorials.html'>Official Examples</a></li>
+<li class='noChildren'><a href='../../../introduction/elsewhere.html'>Other Examples</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../downloads/index.html'>Download&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/ciBuilds.html'>CI Builds</a></li>
+<li class='hasChildren'><a href='../../../downloads/changelog/index.html'>Change Log&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/changelog/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/changelog/dwr30.html'>New in v3.0</a></li>
+<li class='noChildren'><a href='../../../downloads/changelog/dwr20.html'>New in v2.0</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../downloads/upgrading/index.html'>Upgrading DWR&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/upgrading/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/upgrading/dwr30.html'>Upgrading to Version 3.0</a></li>
+<li class='noChildren'><a href='../../../downloads/upgrading/dwr20.html'>Upgrading to Version 2.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/index.html'>Documentation&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/browser/index.html'>Client Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/browser/engine/index.html'>engine.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/engine/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/batch.html'>Call Batching</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/ordering.html'>Call Ordering</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/hooks.html'>Remoting Hooks</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/errors.html'>Timeouts</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/browser/util/index.html'>util.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/util/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/lists.html'>List Manipulation</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/$.html'>$()</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/tables.html'>Table Manipulation</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/addOptions.html'>addOptions</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/addRows.html'>addRows</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/byId.html'>byId()</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/escapeHtml.html'>escapeHtml</a></li>
+<li class='noChildren'><a href='getText.html' class='currentLink'>getText</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/getValue.html'>getValue</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/getValues.html'>getValues</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/onReturn.html'>onReturn</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/removeAllOptions.html'>removeAllOptions</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/removeAllRows.html'>removeAllRows</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/selectRange.html'>selectRange</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/setValue.html'>setValue</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/setValues.html'>setValues</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/toDescriptiveString.html'>toDescriptiveString</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/useLoadingMessage.html'>useLoadingMessage</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/browser/xdomain.html'>Cross-domain Support</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/errors.html'>Error Handling</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/extra-data.html'>Callbacks and Scoping</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/support.html'>Browser Support</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/index.html'>Server Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/index.html'>Configuration&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/servlet/index.html'>WEB-INF Reference&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/multiconfig.html'>Multiple dwr.xml files</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/plugin.html'>Plug-ins</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/test.html'>Test Mode</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/index.html'>dwr.xml&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/index.html'>Converters&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/array.html'>Arrays</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/bean.html'>Beans / Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/collection.html'>Collections</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/dom.html'>DOM Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/enum.html'>Enum</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/file.html'>Images and Binary Files</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/index.html'>Creators&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/new.html'>'New' Creator</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/scripted.html'>'Scripted' Creator</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/static.html'>'Static' Creator</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/filters.html'>Filters</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/signatures.html'>Signatures</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/annotations.html'>Annotations</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/fluent.html'>Fluent Configuration</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/integration/index.html'>Integrating with&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/integration/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/spring.html'>Spring</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/hibernate.html'>Hibernate</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/jsf.html'>JSF</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/guice.html'>Guice</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/struts.html'>Struts</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/jaxer.html'>Aptana Jaxer</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/pageflow.html'>Pageflow / Beehive</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/environment.html'>Supported Environments</a></li>
+<li class='noChildren'><a href='../../../documentation/server/logging.html'>Logging</a></li>
+<li class='noChildren'><a href='../../../documentation/server/javaapi.html'>Accessing Servlet Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/generic.html'>Reading from other URLs</a></li>
+<li class='noChildren'><a href='../../../documentation/server/script_compression.html'>Script Compression</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/reverse-ajax/index.html'>Reverse Ajax&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/getting-started.html'>Getting Started</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/configuration.html'>Configuring</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/retry.html'>Error/Retry Logic</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/hints-and-tips.html'>Hints and Tips</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/load-monitors.html'>Load Monitors</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/threads.html'>Non-Web Threads</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../security/index.html'>Security&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../security/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../security/script-tag-protection.html'>JavaScript Security</a></li>
+<li class='noChildren'><a href='../../../security/allowGetForSafariButMakeForgeryEasier.html'>Safari, GET and CSRF</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../support/index.html'>Support&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../support/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../support/common_problems.html'>Common Problems</a></li>
+<li class='noChildren'><a href='../../../support/faqs.html'>Common Questions</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../development/index.html'>Development&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../development/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../development/contributor/index.html'>Contributors&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../development/contributor/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../development/contributor/contract.html'>The Maintainer Contract</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../development/ccla.html'>CLA for Corporations</a></li>
+<li class='noChildren'><a href='../../../development/icla.html'>CLA for Individuals</a></li>
+</ul>
+</li>
+</ul></div>
+</body>
+</html>

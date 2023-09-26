@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>useLoadingMessage</title>
+  <meta name='alias' content='/dwr/browser/util/useloadingmessage'>
+  <link rel="stylesheet" type="text/css" href="../../../media/styles.css">
+  <script type='text/javascript' src='../../../media/dojo.js'> </script>
+  <script type='text/javascript' src='../../../media/menu.js'> </script>
+</head>
+<body>
+<div id='header'><a href='http://directwebremoting.org/dwr/'>Direct Web Remoting</a></div>
+<div id=pagelinks>
+<div class='navlinks'>[ 
+<a href='/dwr/' title='Easy Ajax for Java'>DWR</a> | 
+ ]
+<form method='GET' action='http://www.google.com/search' id='search-form'>
+<span id='search'>
+<input class='form-text' type='text' id='search-box' name='as_q' size='20' maxlength='255'>
+<input type='hidden' name='as_sitesearch' value='directwebremoting.org'/>
+<input class='form-submit' type='submit' value='Google'/>
+</span>
+</form>
+</div>
+<div id='breadcrumbs'><a href='../../../index.html'>DWR - Easy Ajax for JAVA</a> &#x00BB; <a href='../../../documentation/index.html'>Documentation</a> &#x00BB; <a href='../../../documentation/browser/index.html'>Client Side</a> &#x00BB; <a href='../../../documentation/browser/util/index.html'>util.js</a> &#x00BB; <a href='useLoadingMessage.html' class='currentLink'>useLoadingMessage</a></div></div>
+<div id='content'>
+
+<script type='text/javascript' src='../../../media/util.js'> </script>
+
+<h1>dwr.util.useLoadingMessage</h1>
+
+<p>Setup a GMail style loading message.</p>
+
+<p>This method may be deprecated at some point in the future because its implementation has a number of limitations:</p>
+
+<ul>
+<li>The implementation is rather arbitary. Why red, why top right, etc. The only real answer is, to copy GMail.</li>
+<li>The action is supposed to stop the user interacting with the page until the remote call is complete, but this only works on Firefox due to limitations in IE (although this limitation is likely to be removed in version 3.0)</li>
+<li>This implementation will fail when multiple remote requests are outstanding - the message will be removed too quickly.</li>
+</ul>
+
+<p>It is suggested that you use the source on this page as a template and customize it for your own purposes.</p>
+
+<p>You must call this method after the page has loaded (i.e. not before the onload() event has fired) because it creates a hidden div to contain the loading message.</p>
+
+<!--break-->
+
+<p>The easiest way to achieve this is to call <code>dwr.util.useLoadingMessage</code> from the onload event like this:</p>
+
+<pre>
+&lt;head&gt;
+  &lt;script&gt;
+  function init() {
+    dwr.util.useLoadingMessage();
+  }
+  &lt;/script&gt;
+  ...
+&lt;/head&gt;
+&lt;body onload="init();"&gt;
+  ...
+</pre>
+
+<p>There may well be times when you are not able to easily edit the headers or the body tag (this is common when using a CMS) in which case you can use the following:</p>
+
+<pre>
+&lt;script&gt;
+function init() {
+  dwr.util.useLoadingMessage();
+}
+
+if (window.addEventListener) {
+  window.addEventListener("load", init, false);
+}
+else if (window.attachEvent) {
+  window.attachEvent("onload", init);
+}
+else {
+  window.onload = init;
+}
+&lt;/script&gt;
+</pre>
+
+<p>The source to this function is also a useful starting point for implementing your own loading message. The majority of this function dynamically creates a div (with <code>id="disabledZone"</code>) which contains the message. The important code that makes it appear and disappear whenever Ajax activity is going on looks like this:</p>
+
+<!--break-->
+
+<pre>
+dwr.engine.setPreHook(function() {
+  $('disabledZone').style.visibility = 'visible';
+});
+dwr.engine.setPostHook(function() {
+  $('disabledZone').style.visibility = 'hidden';
+});
+</pre>
+
+<p>This is fairly simple and makes it quite easy to implement your own "loading" message.</p>
+
+<pre>
+function useLoadingMessage(message) {
+  var loadingMessage;
+  if (message) loadingMessage = message;
+  else loadingMessage = "Loading";
+
+  dwr.engine.setPreHook(function() {
+    var disabledZone = $('disabledZone');
+    if (!disabledZone) {
+      disabledZone = document.createElement('div');
+      disabledZone.setAttribute('id', 'disabledZone');
+      disabledZone.style.position = "absolute";
+      disabledZone.style.zIndex = "1000";
+      disabledZone.style.left = "0px";
+      disabledZone.style.top = "0px";
+      disabledZone.style.width = "100%";
+      disabledZone.style.height = "100%";
+      document.body.appendChild(disabledZone);
+      var messageZone = document.createElement('div');
+      messageZone.setAttribute('id', 'messageZone');
+      messageZone.style.position = "absolute";
+      messageZone.style.top = "0px";
+      messageZone.style.right = "0px";
+      messageZone.style.background = "red";
+      messageZone.style.color = "white";
+      messageZone.style.fontFamily = "Arial,Helvetica,sans-serif";
+      messageZone.style.padding = "4px";
+      disabledZone.appendChild(messageZone);
+      var text = document.createTextNode(loadingMessage);
+      messageZone.appendChild(text);
+    }
+    else {
+      $('messageZone').innerHTML = loadingMessage;
+      disabledZone.style.visibility = 'visible';
+    }
+  });
+
+  dwr.engine.setPostHook(function() {
+    $('disabledZone').style.visibility = 'hidden';
+  });
+}
+</pre>
+
+<p>This can be simply adapted to allow use of a loading images as follows:</p>
+
+<pre>
+function useLoadingImage(imageSrc) {
+  var loadingImage;
+  if (imageSrc) loadingImage = imageSrc;
+  else loadingImage = "ajax-loader.gif";
+  dwr.engine.setPreHook(function() {
+    var disabledImageZone = $('disabledImageZone');
+    if (!disabledImageZone) {
+      disabledImageZone = document.createElement('div');
+      disabledImageZone.setAttribute('id', 'disabledImageZone');
+      disabledImageZone.style.position = "absolute";
+      disabledImageZone.style.zIndex = "1000";
+      disabledImageZone.style.left = "0px";
+      disabledImageZone.style.top = "0px";
+      disabledImageZone.style.width = "100%";
+      disabledImageZone.style.height = "100%";
+      var imageZone = document.createElement('img');
+      imageZone.setAttribute('id','imageZone');
+      imageZone.setAttribute('src',imageSrc);
+      imageZone.style.position = "absolute";
+      imageZone.style.top = "0px";
+      imageZone.style.right = "0px";
+      disabledImageZone.appendChild(imageZone);
+      document.body.appendChild(disabledImageZone);
+    }
+    else {
+      $('imageZone').src = imageSrc;
+      disabledImageZone.style.visibility = 'visible';
+    }
+  });
+  dwr.engine.setPostHook(function() {
+    $('disabledImageZone').style.visibility = 'hidden';
+  });
+}
+</pre>
+
+<p>You then use this example like this: <code>useLoadingImage("images/loader.gif")</code>;</p>
+
+</div>
+<div class='menu'>
+<ul id='nav'>
+<li class='noChildren'><a href='../../../index.html'>Home</a></li>
+<li class='hasChildren'><a href='../../../introduction/index.html'>Overview&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../introduction/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../introduction/getting-started.html'>Quick Start</a></li>
+<li class='noChildren'><a href='../../../introduction/remoting_options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../../introduction/scripting-dwr.html'>Scripting DWR</a></li>
+<li class='noChildren'><a href='../../../introduction/tutorials.html'>Official Examples</a></li>
+<li class='noChildren'><a href='../../../introduction/elsewhere.html'>Other Examples</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../downloads/index.html'>Download&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/ciBuilds.html'>CI Builds</a></li>
+<li class='hasChildren'><a href='../../../downloads/changelog/index.html'>Change Log&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/changelog/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/changelog/dwr30.html'>New in v3.0</a></li>
+<li class='noChildren'><a href='../../../downloads/changelog/dwr20.html'>New in v2.0</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../downloads/upgrading/index.html'>Upgrading DWR&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../downloads/upgrading/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../downloads/upgrading/dwr30.html'>Upgrading to Version 3.0</a></li>
+<li class='noChildren'><a href='../../../downloads/upgrading/dwr20.html'>Upgrading to Version 2.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/index.html'>Documentation&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/browser/index.html'>Client Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/browser/engine/index.html'>engine.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/engine/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/batch.html'>Call Batching</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/ordering.html'>Call Ordering</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/hooks.html'>Remoting Hooks</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/engine/errors.html'>Timeouts</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/browser/util/index.html'>util.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/browser/util/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/lists.html'>List Manipulation</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/$.html'>$()</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/tables.html'>Table Manipulation</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/addOptions.html'>addOptions</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/addRows.html'>addRows</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/byId.html'>byId()</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/escapeHtml.html'>escapeHtml</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/getText.html'>getText</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/getValue.html'>getValue</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/getValues.html'>getValues</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/onReturn.html'>onReturn</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/removeAllOptions.html'>removeAllOptions</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/removeAllRows.html'>removeAllRows</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/selectRange.html'>selectRange</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/setValue.html'>setValue</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/setValues.html'>setValues</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/util/toDescriptiveString.html'>toDescriptiveString</a></li>
+<li class='noChildren'><a href='useLoadingMessage.html' class='currentLink'>useLoadingMessage</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/browser/xdomain.html'>Cross-domain Support</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/errors.html'>Error Handling</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/extra-data.html'>Callbacks and Scoping</a></li>
+<li class='noChildren'><a href='../../../documentation/browser/support.html'>Browser Support</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/index.html'>Server Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/index.html'>Configuration&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/servlet/index.html'>WEB-INF Reference&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/multiconfig.html'>Multiple dwr.xml files</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/plugin.html'>Plug-ins</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/servlet/test.html'>Test Mode</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/index.html'>dwr.xml&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/index.html'>Converters&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/array.html'>Arrays</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/bean.html'>Beans / Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/collection.html'>Collections</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/dom.html'>DOM Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/enum.html'>Enum</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/converters/file.html'>Images and Binary Files</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/index.html'>Creators&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/new.html'>'New' Creator</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/scripted.html'>'Scripted' Creator</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/creators/static.html'>'Static' Creator</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/filters.html'>Filters</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/dwrxml/signatures.html'>Signatures</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/annotations.html'>Annotations</a></li>
+<li class='noChildren'><a href='../../../documentation/server/configuration/fluent.html'>Fluent Configuration</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/server/integration/index.html'>Integrating with&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/server/integration/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/spring.html'>Spring</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/hibernate.html'>Hibernate</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/jsf.html'>JSF</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/guice.html'>Guice</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/struts.html'>Struts</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/jaxer.html'>Aptana Jaxer</a></li>
+<li class='noChildren'><a href='../../../documentation/server/integration/pageflow.html'>Pageflow / Beehive</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../documentation/server/environment.html'>Supported Environments</a></li>
+<li class='noChildren'><a href='../../../documentation/server/logging.html'>Logging</a></li>
+<li class='noChildren'><a href='../../../documentation/server/javaapi.html'>Accessing Servlet Objects</a></li>
+<li class='noChildren'><a href='../../../documentation/server/generic.html'>Reading from other URLs</a></li>
+<li class='noChildren'><a href='../../../documentation/server/script_compression.html'>Script Compression</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../documentation/reverse-ajax/index.html'>Reverse Ajax&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/getting-started.html'>Getting Started</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/configuration.html'>Configuring</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/retry.html'>Error/Retry Logic</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/hints-and-tips.html'>Hints and Tips</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/load-monitors.html'>Load Monitors</a></li>
+<li class='noChildren'><a href='../../../documentation/reverse-ajax/threads.html'>Non-Web Threads</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../security/index.html'>Security&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../security/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../security/script-tag-protection.html'>JavaScript Security</a></li>
+<li class='noChildren'><a href='../../../security/allowGetForSafariButMakeForgeryEasier.html'>Safari, GET and CSRF</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../support/index.html'>Support&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../support/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../support/common_problems.html'>Common Problems</a></li>
+<li class='noChildren'><a href='../../../support/faqs.html'>Common Questions</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../../development/index.html'>Development&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../development/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../../development/contributor/index.html'>Contributors&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../../development/contributor/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../../development/contributor/contract.html'>The Maintainer Contract</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../../development/ccla.html'>CLA for Corporations</a></li>
+<li class='noChildren'><a href='../../../development/icla.html'>CLA for Individuals</a></li>
+</ul>
+</li>
+</ul></div>
+</body>
+</html>

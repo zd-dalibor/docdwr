@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Load Monitors</title>
+  <meta name='alias' content='/dwr/reverse-ajax/load-monitors'>
+  <link rel="stylesheet" type="text/css" href="../../media/styles.css">
+  <script type='text/javascript' src='../../media/dojo.js'> </script>
+  <script type='text/javascript' src='../../media/menu.js'> </script>
+</head>
+<body>
+<div id='header'><a href='http://directwebremoting.org/dwr/'>Direct Web Remoting</a></div>
+<div id=pagelinks>
+<div class='navlinks'>[ 
+<a href='/dwr/' title='Easy Ajax for Java'>DWR</a> | 
+ ]
+<form method='GET' action='http://www.google.com/search' id='search-form'>
+<span id='search'>
+<input class='form-text' type='text' id='search-box' name='as_q' size='20' maxlength='255'>
+<input type='hidden' name='as_sitesearch' value='directwebremoting.org'/>
+<input class='form-submit' type='submit' value='Google'/>
+</span>
+</form>
+</div>
+<div id='breadcrumbs'><a href='../../index.html'>DWR - Easy Ajax for JAVA</a> &#x00BB; <a href='../../documentation/index.html'>Documentation</a> &#x00BB; <a href='../../documentation/reverse-ajax/index.html'>Reverse Ajax</a> &#x00BB; <a href='load-monitors.html' class='currentLink'>Load Monitors</a></div></div>
+<div id='content'>
+
+<h1>Reverse Ajax Load Monitors</h1>
+
+<p>DWR comes packaged with different server load monitors which help balance server load between multiple users. The type of monitor chosen will depend on your application's need.</p>
+
+<h2>Throttling Server Load Monitor</h2>
+<p>The Throttling Server Load Monitor at its basic level works by controlling the maximum number of currently connected threads and the maximum hits per second to the server. To control load this load monitor will adjust the time a connection is allowed to stay connected, and the time that the reverse ajax api will wait before connecting to the server again. By adjusting the connected time and the disconnected time the Thottling Server Load Monitor can help give users a better overall experience during times of heavy load.</p>
+
+<p>Since it is inefficient to check load everytime a client requests a new connection, this server monitor runs a separate load management thread that will run at most once every 5 seconds while there are incoming connections. When no more incoming connections are being received the load monitor will simply shutdown and sleep until a new connection is requested. Note that the thread will verify load at least once per hour even if no connections are being received.</p>
+
+<p>When the server is throttling connections there are three possible modes that the server could be in. 
+<ol>
+<li>Low Usage
+<ul>
+<li>Server will accept and maintain all connections with the default connected and disconnected times. </li>
+</ul>
+</li>
+
+<li>High Usage
+<ul>
+<li>In high usage mode the server has reached the maximum connected thread limit and will impose a connected time of 49 second and a disconnected time of 1 second. After high usage has been reached the server will adjust the connected time and disconnected time in a linear fashion to lower server load, which in turn will cause end user response times to feel more and more sluggish based on the number of clients connected and the amount of data being sent and received.</li>
+</ul>
+</li>
+<li>Digg Usage
+<ul>
+<li>When the server is under extremely heavy load the thottling load monitor will switch to digg mode which decreases the connected time to 0 and increases the imposed disconnected time to 2 seconds. When the connected time is 0 clients are not allowed to maintain connections.  This mode is reached once the linear adjustment of high usage mode hits the threshold of connected time equal to 1 second.</li>
+</ul>
+</li>
+</ol>
+
+<h3>Setup</h3>
+<ol>
+
+  <li>Include an init parameter to the DWRServlet.
+<pre>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
+  &lt;display-name&gt;DWR Servlet&lt;/display-name&gt;
+  &lt;servlet-class&gt;org.directwebremoting.servlet.DwrServlet&lt;/servlet-class&gt;
+
+  &lt;init-param&gt;
+    &lt;param-name&gt;activeReverseAjaxEnabled&lt;/param-name&gt;
+    &lt;param-value&gt;true&lt;/param-value&gt;
+  &lt;/init-param&gt;
+    &lt;init-param&gt;
+
+    &lt;param-name&gt;org.directwebremoting.extend.ServerLoadMonitor&lt;/param-name&gt;
+    &lt;param-value&gt;org.directwebremoting.impl.ThrottlingServerLoadMonitor&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/servlet&gt;
+</pre></li>
+</ul>
+
+<p>At this point DWR will now use the ThrottlingServerLoadMonitor to balance reverse ajax connections.</p>
+
+</div>
+<div class='menu'>
+<ul id='nav'>
+<li class='noChildren'><a href='../../index.html'>Home</a></li>
+<li class='hasChildren'><a href='../../introduction/index.html'>Overview&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../introduction/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../introduction/getting-started.html'>Quick Start</a></li>
+<li class='noChildren'><a href='../../introduction/remoting_options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../introduction/scripting-dwr.html'>Scripting DWR</a></li>
+<li class='noChildren'><a href='../../introduction/tutorials.html'>Official Examples</a></li>
+<li class='noChildren'><a href='../../introduction/elsewhere.html'>Other Examples</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../downloads/index.html'>Download&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/ciBuilds.html'>CI Builds</a></li>
+<li class='hasChildren'><a href='../../downloads/changelog/index.html'>Change Log&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/changelog/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/changelog/dwr30.html'>New in v3.0</a></li>
+<li class='noChildren'><a href='../../downloads/changelog/dwr20.html'>New in v2.0</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../downloads/upgrading/index.html'>Upgrading DWR&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../downloads/upgrading/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../downloads/upgrading/dwr30.html'>Upgrading to Version 3.0</a></li>
+<li class='noChildren'><a href='../../downloads/upgrading/dwr20.html'>Upgrading to Version 2.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/index.html'>Documentation&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/browser/index.html'>Client Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/browser/engine/index.html'>engine.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/engine/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/batch.html'>Call Batching</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/ordering.html'>Call Ordering</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/hooks.html'>Remoting Hooks</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/options.html'>Remoting Options</a></li>
+<li class='noChildren'><a href='../../documentation/browser/engine/errors.html'>Timeouts</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/browser/util/index.html'>util.js&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/browser/util/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/lists.html'>List Manipulation</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/$.html'>$()</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/tables.html'>Table Manipulation</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/addOptions.html'>addOptions</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/addRows.html'>addRows</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/byId.html'>byId()</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/escapeHtml.html'>escapeHtml</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getText.html'>getText</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getValue.html'>getValue</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/getValues.html'>getValues</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/onReturn.html'>onReturn</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/removeAllOptions.html'>removeAllOptions</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/removeAllRows.html'>removeAllRows</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/selectRange.html'>selectRange</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/setValue.html'>setValue</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/setValues.html'>setValues</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/toDescriptiveString.html'>toDescriptiveString</a></li>
+<li class='noChildren'><a href='../../documentation/browser/util/useLoadingMessage.html'>useLoadingMessage</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/browser/xdomain.html'>Cross-domain Support</a></li>
+<li class='noChildren'><a href='../../documentation/browser/errors.html'>Error Handling</a></li>
+<li class='noChildren'><a href='../../documentation/browser/extra-data.html'>Callbacks and Scoping</a></li>
+<li class='noChildren'><a href='../../documentation/browser/support.html'>Browser Support</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/index.html'>Server Side&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/index.html'>Configuration&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/servlet/index.html'>WEB-INF Reference&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/multiconfig.html'>Multiple dwr.xml files</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/plugin.html'>Plug-ins</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/servlet/test.html'>Test Mode</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/index.html'>dwr.xml&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/converters/index.html'>Converters&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/array.html'>Arrays</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/bean.html'>Beans / Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/collection.html'>Collections</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/dom.html'>DOM Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/enum.html'>Enum</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/converters/file.html'>Images and Binary Files</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/configuration/dwrxml/creators/index.html'>Creators&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/new.html'>'New' Creator</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/scripted.html'>'Scripted' Creator</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/creators/static.html'>'Static' Creator</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/filters.html'>Filters</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/dwrxml/signatures.html'>Signatures</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/configuration/annotations.html'>Annotations</a></li>
+<li class='noChildren'><a href='../../documentation/server/configuration/fluent.html'>Fluent Configuration</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/server/integration/index.html'>Integrating with&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/server/integration/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/spring.html'>Spring</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/hibernate.html'>Hibernate</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/jsf.html'>JSF</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/guice.html'>Guice</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/struts.html'>Struts</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/jaxer.html'>Aptana Jaxer</a></li>
+<li class='noChildren'><a href='../../documentation/server/integration/pageflow.html'>Pageflow / Beehive</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../documentation/server/environment.html'>Supported Environments</a></li>
+<li class='noChildren'><a href='../../documentation/server/logging.html'>Logging</a></li>
+<li class='noChildren'><a href='../../documentation/server/javaapi.html'>Accessing Servlet Objects</a></li>
+<li class='noChildren'><a href='../../documentation/server/generic.html'>Reading from other URLs</a></li>
+<li class='noChildren'><a href='../../documentation/server/script_compression.html'>Script Compression</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../documentation/reverse-ajax/index.html'>Reverse Ajax&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/getting-started.html'>Getting Started</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/configuration.html'>Configuring</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/retry.html'>Error/Retry Logic</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/hints-and-tips.html'>Hints and Tips</a></li>
+<li class='noChildren'><a href='load-monitors.html' class='currentLink'>Load Monitors</a></li>
+<li class='noChildren'><a href='../../documentation/reverse-ajax/threads.html'>Non-Web Threads</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../security/index.html'>Security&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../security/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../security/script-tag-protection.html'>JavaScript Security</a></li>
+<li class='noChildren'><a href='../../security/allowGetForSafariButMakeForgeryEasier.html'>Safari, GET and CSRF</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../support/index.html'>Support&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../support/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../support/common_problems.html'>Common Problems</a></li>
+<li class='noChildren'><a href='../../support/faqs.html'>Common Questions</a></li>
+</ul>
+</li>
+<li class='hasChildren'><a href='../../development/index.html'>Development&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../development/index.html'>Index</a></li>
+<li class='hasChildren'><a href='../../development/contributor/index.html'>Contributors&nbsp;...</a><ul>
+<li class='noChildren'><a href='../../development/contributor/index.html'>Index</a></li>
+<li class='noChildren'><a href='../../development/contributor/contract.html'>The Maintainer Contract</a></li>
+</ul>
+</li>
+<li class='noChildren'><a href='../../development/ccla.html'>CLA for Corporations</a></li>
+<li class='noChildren'><a href='../../development/icla.html'>CLA for Individuals</a></li>
+</ul>
+</li>
+</ul></div>
+</body>
+</html>

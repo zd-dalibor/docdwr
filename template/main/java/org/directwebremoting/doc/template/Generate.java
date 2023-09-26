@@ -137,8 +137,8 @@ public class Generate
         String root = args[0];
         Map<String, Page> pages = readInput(root + "/docs/web/dwr");
 
-        writeHtmlOutput(pages, root + "/target/publish/");
-        copyStatic(root + "/docs/web/dwr", root + "/target/publish", new String[] {
+        writeHtmlOutput(pages, root + "/dist/");
+        copyStatic(root + "/docs/web/dwr", root + "/dist", new String[] {
             "png", "gif", "jpg", "css", "pdf", "dtd", "xsd", "js"
         });
 

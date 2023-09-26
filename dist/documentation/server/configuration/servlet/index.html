@@ -4,7 +4,7 @@
   <title>WEB-INF Reference</title>
   <meta name='alias' content='/dwr/server/servlet'>
   <link rel="stylesheet" type="text/css" href="../../../../media/styles.css">
-  <link rel='shortcut icon' type='image/x-icon' href='../../../../favicon.ico'>
+  <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>
   <script type='text/javascript' src='../../../../media/dojo.js'> </script>
   <script type='text/javascript' src='../../../../media/menu.js'> </script>
 </head>
@@ -68,23 +68,19 @@
 </tr>
 <tr>
 <th colspan="2">jsonpEnabled</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>3.0RC2</td>
-</td>
 </tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
 </tr>
 <tr>
 <td>Notes:</td>
 <td>Set to true to enable DWR's JSONP remoting.  </td>
-</td>
 </tr>
-<tr>
 
 <tr>
 <td colspan="2"><h2>Security Parameters</h2></td>
@@ -92,15 +88,12 @@
 
 <tr>
 <th colspan="2"><a href="../../../security/allowGetForSafariButMakeForgeryEasier.html">allowGetForSafariButMakeForgeryEasier</a></th>
-</td>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
 <tr>
 <td>Notes:</td>
 <td>Set to true to make DWR work in Safari 1.x (where a bug drops the bodies from POST requests). POST requests are slightly harder to forge, so enabling this reduces security slightly.</td>
@@ -108,15 +101,12 @@
 
 <tr>
 <th colspan="2">crossDomainSessionSecurity</th>
-</td>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
 <tr>
 <td>Default:</td>
 <td>true</td>
-</td>
 <tr>
 <td>Notes:</td>
 <td>Set to false to enable requests from other domains. Note that enabling this can be a significant security risk. See the Wikipedia notes on <a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF</a> for more. Do not set this to false without understanding the consequences.</td>
@@ -124,15 +114,15 @@
 
 <tr>
 <th colspan="2">allowScriptTagRemoting</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0 rc4</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>true</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>Set to true to enable Script Tag remoting. Note that enabling this can be a significant security risk. See the Wikipedia notes on <a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF</a> for more. Do not set this to false without understanding the consequences. There are some cases where you will need to enable Script Tag remoting, but want to leave crossDomainSessionSecurity in place - particularly when you have an http based web page, and an https based DWR service.</td>
@@ -140,15 +130,15 @@
 
 <tr>
 <th colspan="2">debug</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>1.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>Set to true to enable the <a href="test.html">debug/test pages</a>.</td>
@@ -156,15 +146,15 @@
 
 <tr>
 <th colspan="2">scriptSessionTimeout</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>1800000 (30 mins)</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>How quickly do scriptSessions timeout?</td>
@@ -172,15 +162,15 @@
 
 <tr>
 <th colspan="2">maxCallCount</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0rc2 and 1.1.4</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>20</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>What is the maximum number of calls that can be done in a single batch. (Helps prevent DoS attacks).</td>
@@ -192,15 +182,15 @@
 
 <tr>
 <th colspan="2">activeReverseAjaxEnabled</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0 RC3</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>Set to true to enable polling and comet. This can increase the load on your server although DWR does have mechanisms to prevent server overload. Was called pollAndCometEnabled before RC3</td>
@@ -208,15 +198,15 @@
 
 <tr>
 <th colspan="2">pollAndCometEnabled</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0 RC1</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>See activeReverseAjaxEnabled.</td>
@@ -224,15 +214,15 @@
 
 <tr>
 <th colspan="2">maxWaitingThreads</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>100</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>What is the maximium number of threads we keep waiting.
@@ -242,15 +232,15 @@ We reduce the time within poll to reduce the load.
 
 <tr>
 <th colspan="2">maxHitsPerSecond</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>40</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>What is the maximum number of hits we should get per second.
@@ -264,15 +254,15 @@ We increase the poll time to compensate and reduce the load.
 
 <tr>
 <th colspan="2">[<em>Interface Name</em>]</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>1.1</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>The default implementation of the given interface</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>DWR allows you to override parts of itself without needing to recompile. See the <a href="plugin.html">plug-ins documentation</a> for more details.</td>
@@ -280,15 +270,15 @@ We increase the poll time to compensate and reduce the load.
 
 <tr>
 <th colspan="2"><a name="generateDtoClasses"></a>generateDtoClasses</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>interface</td>
-</td>
+</tr>
 <tr>
 <td valign="top">Notes:</td>
 <td>Controls whether or not DWR should generate script for class mappings - see <a href="../dwrxml/converters/bean.html#mappingJavaToJavaScript">Mapping Java classes to JavaScript classes</a>.  Defaults to interface which means DWR will add script for the mappings to each generated interface script.  The parameter may be set to an empty string (to disable all class generation), to a single option (to generate classes in one location), or to a comma delimited list of options (to generate classes in multiple locations).
@@ -302,15 +292,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">ignoreLastModified</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>By default DWR supports Last-Modified/ETags to allow the server to say encourage client to request for resources less. Setting this to true disables this support.</td>
@@ -318,15 +308,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">scriptCompressed</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>1.1 - 2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td><a name="scriptCompression"></a>From version 3.0, DWR automatically compresses output scripts in live mode (see the 'debug' init-param) and leaves them uncompressed in debug mode. The 'scriptCompressed' init-param is NOT required. DWR will use ShrinkSafe or the YUI compressor automatically if they are found in the classpath, otherwise a simpler built-in compressor will be used.
@@ -335,15 +325,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">welcomeFiles</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>index.html, index.htm, index.jsp</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>To enable DWR's ability to find users on a given page it must understand page aliases. The basic implementation reads web.xml looking for the &lt;welcome-file-list&gt; element, however this can be overridden either with this parameter or by creating a new implementation of org.directwebremoting.extend.PageNormalizer.</td>
@@ -351,15 +341,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">normalizeIncludesQueryString</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0 RC3</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>(See notes above on welcomeFiles) Normally Reverse Ajax considers pages with differing query strings (the part of a URL after the ? and before the #) to be the same page. Sometimes (particularly with CMS sites) this is not the case. Setting normalizeIncludesQueryString to true will make Reverse Ajax take the query string into account.</td>
@@ -367,15 +357,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">normalizeIncludesSessionID</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>3.0 RC2</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>false</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>(See notes above on welcomeFiles) Normally Reverse Ajax considers pages with differing session id's (if appended to the query string - ';jsessionid') to be the same page. Setting normalizeIncludesSessionID to true will make Reverse Ajax take the appended session id into account.</td>
@@ -383,15 +373,15 @@ Options include:<br>
 
 <tr>
 <th colspan="2">overridePath</th>
-</td>
+</tr>
 <tr>
 <td>Version:</td>
 <td>2.0</td>
-</td>
+</tr>
 <tr>
 <td>Default:</td>
 <td>null</td>
-</td>
+</tr>
 <tr>
 <td>Notes:</td>
 <td>If your servlet engine is fronted by a webserver that alters the path the DWR may send requests back to the wrong destination. You can set an overridePath to be the new default.</td>

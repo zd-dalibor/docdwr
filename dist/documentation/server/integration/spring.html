@@ -6,7 +6,7 @@
   <meta name='alias' content='/dwr/server/spring'>
   <meta name='navTitle' content='Spring'>
   <link rel="stylesheet" type="text/css" href="../../../media/styles.css">
-  <link rel='shortcut icon' type='image/x-icon' href='../../../favicon.ico'>
+  <link rel='shortcut icon' type='image/x-icon' href='favicon.ico'>
   <script type='text/javascript' src='../../../media/dojo.js'> </script>
   <script type='text/javascript' src='../../../media/menu.js'> </script>
 </head>
@@ -140,7 +140,9 @@ Please continue reading for an overview of some of the critical features of the 
 <h4><a name="controller_tag"></a>The controller tag</h4>
 <p>If you are not using Spring MVC - skip this section.  The controller tag only applies to Spring MVC configurations.</p>
 
-<dwr:config-param name="activeReverseAjaxEnabled" value="true"/>
+<pre>
+&lt;dwr:config-param name="activeReverseAjaxEnabled" value="true"/&lt;
+</pre>
 
 <p>If you are using Spring MVC you must declare one <code>&lt;dwr:controller id="dwrController" debug="true" /&gt;</code> tag.  
 <pre>
@@ -152,7 +154,7 @@ You may also specify configuration parameters for the dwrController:
     &lt;dwr:config-param name="activeReverseAjaxEnabled" value="true"/&gt;
   &lt;/dwr:controller 
 </pre>  
-<p>In Spring MVC, for each controller you have to map the URLs that it will handle. The simplest way to do this is by using the <code>&lt;dwr:url-mapping /&gt;</code> tag.  If you use the url-mapping tag the DWR test page will be unavailable.</p><p>Alternatively, you may specify your own SimpleUrlHandlerMapping. DWR needs mappings for the following URLs: <code>/engine.js, /interface.js, /call/**, /interface/**</code>.  An example of a SimpleUrlHandlerMapping that will allow the DWR test page to work can be <a href="http://www.butterdev.com/dwr/2008/02/dwr-20x-spring-2x-with-spring-mvc/" target="new"">found here (see step 2, numbered item 3)</a>.  Spring mappings can be tricky.  Please see <a href="#mappings_mappings_mappings">our section on mappings</a> if you are having problems.</p>
+<p>In Spring MVC, for each controller you have to map the URLs that it will handle. The simplest way to do this is by using the <code>&lt;dwr:url-mapping /&gt;</code> tag.  If you use the url-mapping tag the DWR test page will be unavailable.</p><p>Alternatively, you may specify your own SimpleUrlHandlerMapping. DWR needs mappings for the following URLs: <code>/engine.js, /interface.js, /call/**, /interface/**</code>.  An example of a SimpleUrlHandlerMapping that will allow the DWR test page to work can be <a href="http://www.butterdev.com/dwr/2008/02/dwr-20x-spring-2x-with-spring-mvc/" target="new">found here (see step 2, numbered item 3)</a>.  Spring mappings can be tricky.  Please see <a href="#mappings_mappings_mappings">our section on mappings</a> if you are having problems.</p>
 
 <h4>The configuration tag</h4>
 <p>The <code>&lt;dwr:configuration/&gt;</code> is used to mimic the behavior of the configuration available in <a href="../configuration/dwrxml/index.html">dwr.xml</a>. This tag is optional and it may have nested tags (init, creator, signatures,..). These nested tags mimic the behavior of those available in <a href="../configuration/dwrxml/index.html">dwr.xml</a>.  Example:
